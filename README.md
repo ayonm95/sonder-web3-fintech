@@ -237,13 +237,13 @@ pnpm test:engine
 
 Sonder maintains strict operational and cryptographic security standards:
 
-* **No Secrets in Git**: `.env`, `.env.local`, `broadcast/`, `cache/`, and private keys are strictly blacklisted in [`.gitignore`](file:///Users/ayon/Downloads/music/.gitignore). Use [`.env.example`](file:///Users/ayon/Downloads/music/.env.example) for environment configuration.
+* **No Secrets in Git**: `.env`, `.env.local`, `broadcast/`, `cache/`, and private keys are strictly blacklisted in [`.gitignore`](.gitignore). Use [`.env.example`](.env.example) for environment configuration.
 * **No On-Chain PII**: Smart contracts store exclusively 32-byte cryptographic digests (`bytes32`) and public wallet addresses.
 * **Merkle Leaf Double Hashing**: Leaves are double-hashed using `keccak256(bytes.concat(keccak256(...)))` to neutralize second-preimage collision attacks.
 * **EIP-712 Domain Separation**: Binds directly to Polygon Amoy `chainId: 80002` to prevent cross-chain signature replay attacks.
 * **Non-Custodial Design**: The server never holds custody of artist earnings or copyright keys. Payout claims and copyright attestations are signed directly by artists via their non-custodial Web3 wallets.
 
-For security disclosures, refer to [`SECURITY.md`](file:///Users/ayon/Downloads/music/SECURITY.md).
+For security disclosures, refer to [`SECURITY.md`](SECURITY.md).
 
 ---
 
@@ -270,6 +270,6 @@ For security disclosures, refer to [`SECURITY.md`](file:///Users/ayon/Downloads/
 
 ## 📜 License & Acknowledgments
 
-This project is licensed under the **MIT License** — see the [`LICENSE`](file:///Users/ayon/Downloads/music/LICENSE) file for details.
+This project is licensed under the **MIT License** — see the [`LICENSE`](LICENSE) file for details.
 
 Developed as a showcase portfolio illustrating high-performance Web3 architecture, financial ledger invariants, and digital rights monetization.
