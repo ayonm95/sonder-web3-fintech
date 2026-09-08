@@ -314,7 +314,7 @@ pnpm test:engine
 
 ## 🗄 Database Schema & Data Model
 
-The schema is defined in [`prisma/schema.prisma`](file:///Users/ayon/Downloads/music/prisma/schema.prisma):
+The schema is defined in [`prisma/schema.prisma`](prisma/schema.prisma):
 
 - `User`: Identity with unique `walletAddress`, role (`LISTENER`, `CREATOR`, `ADMIN`), and KYC flag.
 - `CreatorProfile`: Stage name, bio, payout wallet, verified status, and total earnings.
@@ -344,7 +344,7 @@ docker compose up -d
 **Resolution**: Run `pnpm approve-builds --all` or ensure `onlyBuiltDependencies` is present in `pnpm-workspace.yaml`.
 
 ### 3. BigInt JSON Serialization
-**Design note**: PostgreSQL `BigInt` (paise) cannot be serialized by standard `JSON.stringify`. Sonder provides a universal helper [`serializeBigInts()`](file:///Users/ayon/Downloads/music/lib/serialize.ts) that recursively maps all `BigInt` values to string format for safe client consumption.
+**Design note**: PostgreSQL `BigInt` (paise) cannot be serialized by standard `JSON.stringify`. Sonder provides a universal helper [`serializeBigInts()`](lib/serialize.ts) that recursively maps all `BigInt` values to string format for safe client consumption.
 
 ### 4. Database Reset & Reseed
 If you want to wipe the database and start fresh with sample data:
