@@ -13,7 +13,8 @@
     "test:engine": "tsx scripts/test-engine.ts",
     "deploy:dev": "bash scripts/deploy-and-dev.sh",
     "infra:up": "docker compose up -d",
-    "infra:down": "docker compose down"
+    "infra:down": "docker compose down",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.4.1",
