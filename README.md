@@ -11,6 +11,8 @@
 > **Sonder** is a production-grade Web3 & FinTech music platform engineered to solve the transparency and settlement crisis in creator monetization.
 >
 > By uniting **real-time Web Audio streaming**, **GAAP-compliant double-entry ledgering**, **EIP-712 cryptographic rights attestation**, and **OpenZeppelin-compatible Merkle tree royalty settlement on the Polygon blockchain**, Sonder provides an end-to-end, mathematically verifiable music economy.
+>
+> **Status:** Live on **Polygon Amoy testnet, pending external audit** before any mainnet deployment.
 
 ---
 
@@ -102,6 +104,8 @@
 ---
 
 ## 🔗 Smart Contracts & On-Chain Addresses
+
+> **Status:** Deployed on **Polygon Amoy testnet, pending external audit**.
 
 The contracts are live on the **Polygon Amoy Testnet (Chain ID 80002)** and fully verifiable on the block explorer:
 
@@ -240,6 +244,8 @@ pnpm test:engine
 ## 🔒 Security & Git Safety Considerations
 
 Sonder maintains strict operational and cryptographic security standards:
+
+* **Audit & Testnet Status**: Currently operational on **Polygon Amoy testnet, pending external audit**. Smart contracts are compiled with Foundry (Solidity 0.8.36), statically validated, and deployed on Amoy (Chain ID 80002). External third-party security audits and prolonged testnet soak will precede any mainnet real-funds release.
 
 * **No Secrets in Git**: `.env`, `.env.local`, `broadcast/`, `cache/`, and private keys are strictly blacklisted in [`.gitignore`](.gitignore). Use [`.env.example`](.env.example) for environment configuration.
 * **No On-Chain PII**: Smart contracts store exclusively 32-byte cryptographic digests (`bytes32`) and public wallet addresses.
