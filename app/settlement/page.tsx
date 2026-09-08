@@ -183,18 +183,40 @@ export default function SettlementPage() {
                 </div>
               </div>
 
-              {/* Polygon Amoy Tx Badge */}
-              {activePeriod.onChainTxHash && (
-                <a
-                  href={`https://amoy.polygonscan.com/tx/${activePeriod.onChainTxHash}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-100 border border-white/10 text-xs font-mono text-brand-cyan hover:bg-white/10 transition-colors"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  PolygonScan: {activePeriod.onChainTxHash.slice(0, 10)}…
-                </a>
-              )}
+              {/* On-Chain Commitment Status Badge */}
+              <div className="flex flex-col sm:flex-items-end gap-1.5">
+                {activePeriod.onChainTxHash && (
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs font-mono text-amber-300">
+                      <span className="h-2 w-2 rounded-full bg-amber-400" />
+                      Commitment: Local Registry (Simulated Tx)
+                    </span>
+                    <a
+                      href={`https://amoy.polygonscan.com/tx/${activePeriod.onChainTxHash}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface-100 border border-white/10 text-[11px] font-mono text-slate-400 hover:text-brand-cyan hover:bg-white/10 transition-colors"
+                      title="Inspect hash on PolygonScan"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      {activePeriod.onChainTxHash.slice(0, 8)}…
+                    </a>
+                  </div>
+                )}
+                <div className="text-[10px] text-slate-400 font-mono text-right">
+                  Cryptographic Merkle tree computed & verified off-chain
+                </div>
+              </div>
+            </div>
+
+            {/* Explanatory Info Alert for Recruiters / Developers */}
+            <div className="p-3.5 rounded-2xl bg-brand-cyan/5 border border-brand-cyan/20 text-xs text-slate-300 flex items-start gap-2.5">
+              <div className="p-1 rounded-md bg-brand-cyan/20 text-brand-cyan mt-0.5">
+                <ExternalLink className="h-3.5 w-3.5" />
+              </div>
+              <div className="leading-relaxed text-[11px]">
+                <strong className="text-white">Why does PolygonScan show "Not Found"?</strong> During local development, Merkle roots are computed and committed locally in PostgreSQL with synthetic transaction hashes so the platform runs with zero gas/faucet dependencies. All Merkle proofs, leaf calculations, and cryptographic verifications on this page are <span className="text-brand-cyan font-bold">100% real cryptography</span>. To broadcast a live transaction to Polygon Amoy, deploy <code className="text-purple-300 bg-white/5 px-1 py-0.5 rounded">SettlementManager.sol</code> using a funded testnet wallet.
+              </div>
             </div>
 
             {/* Merkle Root Highlight */}

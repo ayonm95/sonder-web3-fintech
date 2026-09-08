@@ -11,6 +11,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "test:engine": "tsx scripts/test-engine.ts",
+    "deploy:dev": "bash scripts/deploy-and-dev.sh",
     "infra:up": "docker compose up -d",
     "infra:down": "docker compose down"
   },

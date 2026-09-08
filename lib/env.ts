@@ -11,6 +11,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_CREATOR_CLAIMS_ADDRESS: z
     .string()
     .default('0xb61136b637f5d6fF87123A11C238622c83c27f51'),
+  NEXT_PUBLIC_CREATOR_REGISTRY_ADDRESS: z.string().optional(),
   JWT_SECRET: z.string().default('creator-music-super-secure-local-dev-jwt-secret-key-32-bytes'),
 });
 

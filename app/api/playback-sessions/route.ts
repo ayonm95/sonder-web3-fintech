@@ -50,7 +50,7 @@ export async function POST(request: Request) {
       userId,
     });
 
-    return NextResponse.json({ success: true, data: session }, { status: 201 });
+    return NextResponse.json({ success: true, data: serializeBigInts(session) }, { status: 201 });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to start playback session' },

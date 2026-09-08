@@ -1,3 +1,4 @@
+import { TrackState } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { serializeBigInts } from '@/lib/serialize';
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ success: true, data: track }, { status: 201 });
+    return NextResponse.json({ success: true, data: serializeBigInts(track) }, { status: 201 });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to create track' },
