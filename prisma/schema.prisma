@@ -1,0 +1,267 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  LISTENER
+  CREATOR
+  MODERATOR
+  FINANCE_OPERATOR
+  COMPLIANCE_ADMIN
+  PLATFORM_ADMIN
+}
+
+enum TrackState {
+  DRAFT
+  UPLOADED
+  PROCESSING
+  MODERATION_REVIEW
+  PUBLISHED
+  MONETIZED
+  SUSPENDED
+}
+
+enum PlaybackEventType {
+  START
+  HEARTBEAT
+  SEEK
+  PAUSE
+  RESUME
+  STOP
+  COMPLETE
+}
+
+enum SessionStatus {
+  ACTIVE
+  COMPLETED
+  ABORTED
+  FRAUD_EXCLUDED
+}
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  REVENUE
+  EXPENSE
+  EQUITY
+}
+
+enum LedgerDirection {
+  DEBIT
+  CREDIT
+}
+
+enum SettlementStatus {
+  PENDING
+  CALCULATED
+  COMMITTED_ON_CHAIN
+  FINALIZED
+}
+
+enum PayoutStatus {
+  REQUESTED
+  PENNY_DROP_VERIFIED
+  PROCESSING
+  PAID
+  REJECTED
+}
+
+model User {
+  id              String           @id @default(uuid())
+  email           String           @unique
+  displayName     String
+  role            Role             @default(LISTENER)
+  walletAddress   String?          @unique
+  isKycVerified   Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  creatorProfile  CreatorProfile?
+  playbackSessions PlaybackSession[]
+  consents        ConsentRecord[]
+
+  @@map("users")
+}
+
+model CreatorProfile {
+  id                 String           @id @default(uuid())
+  userId             String           @unique
+  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stageName          String
+  bio                String?
+  avatarUrl          String?
+  bannerUrl          String?
+  payoutWallet       String
+  verifiedOnChain    Boolean          @default(false)
+  onChainTxHash      String?
+  totalEarningsMinor BigInt           @default(0)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  tracks             Track[]
+  allocations        CreatorAllocation[]
+  payoutRequests     PayoutRequest[]
+
+  @@map("creator_profiles")
+}
+
+model Track {
+  id                          String           @id @default(uuid())
+  title                       String
+  genre                       String           @default("Indie / Electronic")
+  artistId                    String
+  artist                      CreatorProfile   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  durationSeconds             Int              @default(0)
+  audioUrl                    String
+  coverUrl                    String?
+  state                       TrackState       @default(DRAFT)
+  
+  // EIP-712 Cryptographic Rights Attestation
+  rightsAttestationSignature  String?
+  rightsAttestationSigner     String?
+  rightsAttestationHash       String?
+  ipfsCid                     String?
+  audioFingerprint            String?
+
+  totalStreams                Int              @default(0)
+  qualifiedMinutes            Int              @default(0)
+  createdAt                   DateTime         @default(now())
+  updatedAt                   DateTime         @updatedAt
+
+  playbackSessions            PlaybackSession[]
+
+  @@map("tracks")
+}
+
+model PlaybackSession {
+  id                     String           @id @default(uuid())
+  trackId                String
+  track                  Track            @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  userId                 String?
+  user                   User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  sessionToken           String           @unique
+  status                 SessionStatus    @default(ACTIVE)
+  startedAt              DateTime         @default(now())
+  endedAt                DateTime?
+  qualifiedDurationSec   Int              @default(0)
+  fraudRiskScore         Int              @default(0) // 0-100; >50 excluded from settlement
+  fraudReason            String?
+
+  events                 PlaybackEvent[]
+
+  @@map("playback_sessions")
+}
+
+model PlaybackEvent {
+  id              String            @id @default(uuid())
+  sessionId       String
+  session         PlaybackSession   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  eventType       PlaybackEventType
+  positionSeconds Int
+  timestamp       DateTime          @default(now())
+
+  @@map("playback_events")
+}
+
+model LedgerAccount {
+  id          String         @id @default(uuid())
+  code        String         @unique
+  name        String
+  type        AccountType
+  description String?
+  createdAt   DateTime       @default(now())
+
+  entries     LedgerEntry[]
+
+  @@map("ledger_accounts")
+}
+
+model LedgerEntry {
+  id              String          @id @default(uuid())
+  transactionId   String
+  accountId       String
+  account         LedgerAccount   @relation(fields: [accountId], references: [id])
+  amountMinor     BigInt          // In paise (1 INR = 100 paise)
+  direction       LedgerDirection
+  referenceType   String          // subscription, stream_royalty, tds_withheld, payout
+  referenceId     String?
+  idempotencyKey  String          @unique
+  description     String
+  createdAt       DateTime        @default(now())
+
+  @@map("ledger_entries")
+}
+
+model SettlementPeriod {
+  id                String              @id @default(uuid())
+  periodNumber      Int                 @unique
+  startDate         DateTime
+  endDate           DateTime
+  totalPoolMinor    BigInt
+  merkleRoot        String?
+  ipfsMetadataCid   String?
+  onChainTxHash     String?
+  status            SettlementStatus    @default(PENDING)
+  createdAt         DateTime            @default(now())
+  finalizedAt       DateTime?
+
+  allocations       CreatorAllocation[]
+
+  @@map("settlement_periods")
+}
+
+model CreatorAllocation {
+  id                 String           @id @default(uuid())
+  periodId           String
+  period             SettlementPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+  creatorId          String
+  creator            CreatorProfile   @relation(fields: [creatorId], references: [id])
+  walletAddress      String
+  qualifiedMinutes   Int
+  grossAmountMinor   BigInt
+  tdsAmountMinor     BigInt           // 1% TDS under Section 194O
+  netAmountMinor     BigInt
+  merkleProofJson    String           // JSON string of bytes32[] proof
+  isClaimed          Boolean          @default(false)
+  claimedAt          DateTime?
+  claimTxHash        String?
+
+  @@unique([periodId, creatorId])
+  @@map("creator_allocations")
+}
+
+model PayoutRequest {
+  id                 String           @id @default(uuid())
+  creatorId          String
+  creator            CreatorProfile   @relation(fields: [creatorId], references: [id])
+  amountMinor        BigInt
+  tdsMinor           BigInt
+  netMinor           BigInt
+  bankAccountMasked  String
+  ifscCode           String
+  status             PayoutStatus     @default(REQUESTED)
+  referenceId        String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  @@map("payout_requests")
+}
+
+model ConsentRecord {
+  id                String           @id @default(uuid())
+  userId            String
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  creatorId         String
+  scope             String           // e.g. "crm.newsletters", "crm.merch_drops"
+  policyVersionHash String
+  isRevoked         Boolean          @default(false)
+  createdAt         DateTime         @default(now())
+  revokedAt         DateTime?
+
+  @@map("consent_records")
+}
