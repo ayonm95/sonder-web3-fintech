@@ -1,156 +1,215 @@
-# Sonder: Creator-First Decentralized Royalty & Streaming Platform
+# Sonder: Decentralized Music Streaming & FinTech Royalty Platform
 
-[![Platform](https://img.shields.io/badge/Platform-Next.js%2015%20%7C%20React%2019-black)](https://nextjs.org/)
-[![Database](https://img.shields.io/badge/Database-PostgreSQL%2016%20%7C%20Prisma%20ORM-blue)](https://www.prisma.io/)
-[![Engine](https://img.shields.io/badge/Container-OrbStack%20%28macOS%29-purple)](https://orbstack.dev/)
-[![Web3](https://img.shields.io/badge/Web3-EIP--712%20%7C%20Merkle%20Trees%20%7C%20Polygon%20Amoy-teal)](https://ethereum.org/)
-[![Compliance](https://img.shields.io/badge/Compliance-Sec%20194O%20TDS%20%7C%20DPDP%20Act%202023-emerald)](https://incometaxindia.gov.in/)
+[![Next.js 15](https://img.shields.io/badge/Frontend-Next.js%2015%20(App%20Router)-black?logo=next.js)](https://nextjs.org/)
+[![React 19](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
+[![Foundry](https://img.shields.io/badge/Smart%20Contracts-Foundry%20%7C%20Solidity%200.8.36-red)](https://getfoundry.sh/)
+[![Polygon Amoy](https://img.shields.io/badge/Network-Polygon%20Amoy%20(80002)-8247e5?logo=polygon)](https://amoy.polygonscan.com/)
+[![Prisma ORM](https://img.shields.io/badge/Database-Prisma%20%7C%20PostgreSQL-2d3748?logo=prisma)](https://www.prisma.io/)
+[![Compliance](https://img.shields.io/badge/Compliance-Sec%20194J%20TDS%20%7C%20DPDP%20Act%202023-emerald)](https://incometaxindia.gov.in/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> **Sonder** is a creator-first decentralized music platform engineered to solve the hardest engineering, financial, and cryptographic challenges in creator monetization: **double-entry ledger bookkeeping**, **OpenZeppelin-compatible Merkle tree royalty settlements**, **non-repudiable EIP-712 rights attestations**, **server-authoritative stream fraud detection**, and **privacy-preserving k-anonymity analytics**.
-
----
-
-## Table of Contents
-1. [What's Real vs. Simulated](#-whats-real-vs-simulated)
-2. [High-Level Architecture](#-high-level-architecture)
-3. [Prerequisites & Environment](#-prerequisites--environment)
-4. [Quickstart (OrbStack on macOS)](#-quickstart-orbstack-on-macos)
-5. [How to Run Tests](#-how-to-run-tests)
-6. [Core Workflows & App Guide](#-core-workflows--app-guide)
-   - [1. Listener Playback & Telemetry Workflow (`/`)](#1-listener-playback--telemetry-workflow-)
-   - [2. Creator Studio & EIP-712 Rights Attestation (`/studio`)](#2-creator-studio--eip-712-rights-attestation-studio)
-   - [3. Double-Entry Ledger & Section 194O TDS (`/ledger`)](#3-double-entry-ledger--section-194o-tds-ledger)
-   - [4. Cryptographic Merkle Settlement (`/settlement`)](#4-cryptographic-merkle-settlement-settlement)
-   - [5. Anti-Fraud & Playback Diagnostics (`/fraud-diagnostics`)](#5-anti-fraud--playback-diagnostics-fraud-diagnostics)
-   - [6. Fan CRM, k-Anonymity & Privacy Vault (`/privacy`)](#6-fan-crm-k-anonymity--privacy-vault-privacy)
-7. [API Endpoints Reference](#-api-endpoints-reference)
-8. [Database Schema & Data Model](#-database-schema--data-model)
-9. [Troubleshooting & Gotchas](#-troubleshooting--gotchas)
+> **Sonder** is a production-grade Web3 & FinTech music platform engineered to solve the transparency and settlement crisis in creator monetization.
+>
+> By uniting **real-time Web Audio streaming**, **GAAP-compliant double-entry ledgering**, **EIP-712 cryptographic rights attestation**, and **OpenZeppelin-compatible Merkle tree royalty settlement on the Polygon blockchain**, Sonder provides an end-to-end, mathematically verifiable music economy.
 
 ---
 
-## ⚡ What's Real vs. Simulated
+## 📑 Table of Contents
 
-Sonder is designed to demonstrate **authentic production-grade thinking** on core differentiators while avoiding unnecessary enterprise bureaucracy (e.g. KYC vendors, real banking rails, banking gateway licenses):
-
-| Component | Status | Implementation Details |
-|---|---|---|
-| **Double-Entry Financial Ledger** | **Real Logic** | Invariant assertion (`Total Debits == Total Credits`) in paise minor units, append-only entries, idempotency keys, and Section 194O 1% statutory TDS deduction. |
-| **EIP-712 Rights Attestation** | **Real Cryptography** | Structured typed data schema under Indian Copyright Act Section 19. Signed via MetaMask (Amoy / Sepolia) or 1-click testnet key; verified server-side with `ethers.verifyTypedData`. |
-| **Merkle Tree Royalty Settlement** | **Real Cryptography** | Deterministic sorted-pair binary Merkle tree (`keccak256`), leaf generation, and cryptographic proof verification matching OpenZeppelin `MerkleProof.sol`. |
-| **Stream Fraud Detection** | **Real Scoring Engine** | Server-side heartbeat ingestion (every 8-10s), velocity checks, cadence drift detection, loop-farming penalty scoring, and qualified listening derivation (30s rule). |
-| **k-Anonymity Privacy** | **Real Query Guard** | Direct database-query suppression (`[SUPPRESSED: < 25]`) to prevent re-identification attacks in listener analytics. |
-| **Banking & Fiat Payouts** | **Simulated** | Synthetic escrow pool, Penny Drop bank verification, and simulated IMPS/UPI payouts. |
-| **On-Chain Settlement Root Commit** | **Simulated Default (with Polygon Amoy)** | Root is computed and stored with real Polygon Amoy explorer link; contracts in `contracts/src` can be deployed via Foundry. |
+1. [Architectural Overview](#-architectural-overview)
+2. [Complete Technical Stack](#-complete-technical-stack)
+3. [Smart Contracts & On-Chain Addresses](#-smart-contracts--on-chain-addresses)
+4. [Core Architectural Workflows](#-core-architectural-workflows)
+   - [1. Streaming Engine & Playback Telemetry](#1-streaming-engine--playback-telemetry)
+   - [2. Creator Studio & EIP-712 Legal Rights Attestation](#2-creator-studio--eip-712-legal-rights-attestation)
+   - [3. Double-Entry Financial Accounting (GAAP)](#3-double-entry-financial-accounting-gaap)
+   - [4. Merkle Royalty Settlement & On-Chain Roots](#4-merkle-royalty-settlement--on-chain-roots)
+   - [5. Anti-Fraud Playback Heuristics](#5-anti-fraud-playback-heuristics)
+   - [6. DPDP Act 2023 Compliance & Privacy Vault](#6-dpdp-act-2023-compliance--privacy-vault)
+5. [Getting Started & Installation](#-getting-started--installation)
+   - [Prerequisites](#prerequisites)
+   - [Environment Setup (`.env`)](#environment-setup-env)
+   - [Database Synchronization](#database-synchronization)
+   - [Smart Contract Deployment Script](#smart-contract-deployment-script)
+6. [Automated Verification & Test Suite](#-automated-verification--test-suite)
+7. [Security & Git Safety Considerations](#-security--git-safety-considerations)
+8. [API Route Reference](#-api-route-reference)
+9. [License & Acknowledgments](#-license--acknowledgments)
 
 ---
 
-## 🏗 High-Level Architecture
+## 🏗 Architectural Overview
 
 ```
-                                  +---------------------------------------+
-                                  |           Client / Browser            |
-                                  | (Next.js 15 App Router + Tailwind CSS)|
-                                  +-------------------+-------------------+
-                                                      |
-                  +-----------------------------------+-----------------------------------+
-                  |                                   |                                   |
-                  v                                   v                                   v
-        [ Listener Portal ]                 [ Creator Studio ]                  [ Financial Hub ]
-     - Persistent Web Audio              - Lifecycle State Machine           - Double-Entry Journal
-     - Heartbeat Emitter (8s)            - EIP-712 Rights Signing            - Sec 194O TDS Calculator
-     - Real-Time Fraud Chip              - MetaMask / Testnet Key            - Debit == Credit Invariant
-                  |                                   |                                   |
-                  +-----------------------------------+-----------------------------------+
-                                                      |
-                                                      v
-                                        +----------------------------+
-                                        |      Next.js API Engine    |
-                                        +--------------+-------------+
-                                                       |
-         +--------------------+------------------------+-----------------------+--------------------+
-         |                    |                        |                       |                    |
-         v                    v                        v                       v                    v
-  [ ledger.ts ]         [ merkle.ts ]            [ eip712.ts ]           [ fraud.ts ]         [ privacy.ts ]
-- 6-Account Chart     - Binary Tree Build     - Domain Separation     - Velocity Anomaly   - k = 25 Suppression
-- Invariant Checker   - Sorted-pair Hashing   - Typed Data Schema     - Loop-Farm Flags    - DPDP Consent Hash
-- 1% TDS Calculator   - Proof Generation      - Signer Recovery       - 30s Qualified Deriv- Data Export (Art 12)
-         |                    |                        |                       |                    |
-         +--------------------+------------------------+-----------------------+--------------------+
-                                                       |
-                                                       v
-                                        +----------------------------+
-                                        |    Prisma ORM Client       |
-                                        +--------------+-------------+
-                                                       |
-                                                       v
-                                        +----------------------------+
-                                        |   PostgreSQL 16 Engine     |
-                                        |    (Running in OrbStack)   |
-                                        +----------------------------+
+                                    +-----------------------------------------+
+                                    |         Next.js 15 Client (React 19)    |
+                                    |     Web Audio Player + MetaMask Wallet  |
+                                    +--------------------+--------------------+
+                                                         |
+                               +-------------------------+-------------------------+
+                               |                                                   |
+                               v                                                   v
+                     [ Listener Portal ]                                   [ Creator Studio ]
+             - Lossless Audio Web Streams                          - Track Lifecycle State Machine
+             - 8-Second Telemetry Heartbeats                       - Audio Fingerprinting
+             - Fraud Risk Scoring Chip                             - EIP-712 Gasless Rights Attestation
+                               |                                                   |
+                               +-------------------------+-------------------------+
+                                                         |
+                                                         v
+                                           +----------------------------+
+                                           |     Next.js API Engine     |
+                                           +--------------+-------------+
+                                                          |
+             +--------------------+-----------------------+-----------------------+--------------------+
+             |                    |                       |                       |                    |
+             v                    v                       v                       v                    v
+      [ ledger.ts ]         [ merkle.ts ]           [ eip712.ts ]           [ fraud.ts ]         [ privacy.ts ]
+    - Chart of Accounts   - Binary Merkle Tree    - Domain Separation     - Velocity Analysis  - k = 25 Suppression
+    - Debit == Credit     - Sorted-Pair Hashing   - Typed Data Schema     - Loop Detection     - DPDP Consent Hash
+    - 1% TDS Calculator   - Proof Generation      - PubKey Signer Recovery- 30s Rule Qualified - Art 12 Portability
+             |                    |                       |                       |                    |
+             +--------------------+-----------------------+-----------------------+--------------------+
+                                                          |
+                               +--------------------------+--------------------------+
+                               |                                                     |
+                               v                                                     v
+                 +----------------------------+                        +----------------------------+
+                 |    PostgreSQL Database     |                        |    Polygon Amoy Testnet    |
+                 |     (Prisma ORM Client)    |                        |   (EVM Smart Contracts)    |
+                 +----------------------------+                        +----------------------------+
+                 - Complete Ledger History                             - SettlementManager.sol
+                 - Creator & Track Metadata                            - CreatorRegistry.sol
+                 - Playback Session Telemetry                          - Immutable 32-byte Roots
 ```
 
 ---
 
-## 💻 Prerequisites & Environment
+## 🛠 Complete Technical Stack
 
-- **Operating System**: macOS (Apple Silicon or Intel)
-- **Container Engine**: **[OrbStack](https://orbstack.dev/)** (drop-in, lightweight Docker replacement for macOS)
-- **Node.js**: v20.x or v22.x LTS
-- **Package Manager**: `pnpm` (v10+ supported via `pnpm-workspace.yaml`)
-- **Web3 Wallet (Optional)**: MetaMask browser extension for testing interactive on-chain EIP-712 signing (a 1-click testnet key signer is also built-in).
+| Layer | Technologies | Purpose & Invariants |
+| :--- | :--- | :--- |
+| **Frontend Framework** | **Next.js 15.1 (App Router)** & **React 19** | Server/Client components, SSR, dynamic caching, micro-animations. |
+| **Styling & Design** | **Tailwind CSS v3**, **Lucide Icons**, **Canvas Confetti** | Responsive dark-mode glassmorphism UI with hardware-accelerated transitions. |
+| **Audio Engine** | **HTML5 Audio / Web Audio API** | Lossless audio buffer streaming, reactive playback waveform, scrubbing controls. |
+| **Database & ORM** | **PostgreSQL 16** via **Prisma ORM 6** | Relational integrity, foreign key constraints, `BigInt` financial storage in paise. |
+| **Smart Contracts** | **Solidity 0.8.36**, **Foundry (Forge & Cast)** | Gas-optimized smart contracts, deployed and broadcast to Polygon Amoy. |
+| **Web3 Client** | **Ethers.js v6**, **Injected MetaMask Provider** | EIP-712 structured data signing, Merkle leaf generation, ABI encoding. |
+| **Accounting Standard** | **Double-Entry Bookkeeping** | Strict mathematical balance invariant: $\sum \text{Debits} - \sum \text{Credits} = 0$. |
+| **Tax Compliance** | **Section 194J / 194O Income Tax Act** | Automatic 1.00% TDS withholding calculated and journaled on every distribution. |
+| **Data Protection** | **Digital Personal Data Protection (DPDP) Act 2023** | $k$-anonymity audience suppression ($k=25$), purpose limitation, consent archives. |
 
 ---
 
-## 🚀 Quickstart (OrbStack on macOS)
+## 🔗 Smart Contracts & On-Chain Addresses
 
-Follow these exact steps to boot the entire platform from a clean state:
+The contracts are live on the **Polygon Amoy Testnet (Chain ID 80002)** and fully verifiable on the block explorer:
 
-### Step 1: Start OrbStack Daemon
+| Contract | Polygon Amoy Address | Verified Transaction Hash | Explorer Link |
+| :--- | :--- | :--- | :--- |
+| **SettlementManager** | `0xf23Df41409afbF92578198a95c965e0e5ECbefa5` | `0x13fee2ecbcdb72ef473355aa59542737ac237535be47e7b3ea23b15544934134` | [View on PolygonScan](https://amoy.polygonscan.com/address/0xf23Df41409afbF92578198a95c965e0e5ECbefa5) |
+| **CreatorRegistry** | `0x9FD0052F3e4E4643E21140398Fee9e7d6335F821` | `0xcd397e8db63424a19533f36f89e6531810c6efe0532108545aaea573f9af4092` | [View on PolygonScan](https://amoy.polygonscan.com/address/0x9FD0052F3e4E4643E21140398Fee9e7d6335F821) |
+
+* **SettlementManager.sol**: Commits periodic 32-byte Merkle roots, pool distributions, and IPFS ledger digests.
+* **CreatorRegistry.sol**: Maps off-chain creator UUID hashes to verified payout wallets with zero on-chain PII.
+
+---
+
+## ⚙️ Core Architectural Workflows
+
+### 1. Streaming Engine & Playback Telemetry
+* Audio is streamed through the persistent Web Audio context.
+* Every playback session generates a unique cryptographic session token (`ses_...`).
+* The client sends background telemetry pings every 8–10 seconds to `/api/playback-sessions/[token]/heartbeat`.
+* Sessions must achieve **30 continuous seconds** of valid playback without cadence drift to earn "Qualified Listening" status for royalty allocation.
+
+### 2. Creator Studio & EIP-712 Legal Rights Attestation
+Under Section 19 of the **Indian Copyright Act 1957**, copyright assignments are legally void unless executed in writing specifying rights, territory, and term.
+1. Master tracks advance through a 6-stage lifecycle: `DRAFT` ➔ `UPLOADED` ➔ `PROCESSING` ➔ `MODERATION` ➔ `PUBLISHED` ➔ `MONETIZED`.
+2. Upon reaching `PUBLISHED`, the creator executes a **gasless EIP-712 typed signature** in MetaMask.
+3. The domain separator binds to Polygon Amoy (`80002`).
+4. The server receives `(message, signature)` and recovers the public address with `ethers.verifyTypedData`. When verified, the track is promoted to `MONETIZED`.
+
+### 3. Double-Entry Financial Accounting (GAAP)
+Financial integrity is managed by a strict Chart of Accounts:
+* `1010`: Escrow & Cash Vault (Asset)
+* `2010`: Creator Royalties Payable (Liability)
+* `2020`: Statutory TDS Withholding Payable (Liability)
+* `4010`: Subscription Pool Revenue (Revenue)
+* `5010`: Royalty Distribution Expense (Expense)
+
+All balances are recorded in integer subunits (paise) with mandatory idempotency keys and mathematical balance invariant verification:
+$$\text{Total Debits} \equiv \text{Total Credits}$$
+
+### 4. Merkle Royalty Settlement & On-Chain Roots
+Rather than executing thousands of costly on-chain transactions, Sonder utilizes an off-chain compute, on-chain commit model:
+1. Qualified stream counts are compiled into pro-rata creator allocations.
+2. 1.00% TDS is deducted for tax compliance.
+3. A deterministic, sorted-pair binary Merkle tree (`keccak256`) is constructed.
+4. The operator commits the single 32-byte root hash on-chain to **Polygon Amoy**.
+5. Creators receive a lightweight $O(\log N)$ sibling proof enabling instant, independent mathematical verification on [PolygonScan](https://amoy.polygonscan.com/).
+
+### 5. Anti-Fraud Playback Heuristics
+The platform evaluates every streaming session with real-time risk scoring (0–100):
+* **Loop Farming**: Flags repetitive playback cycles with high frequency.
+* **Cadence Drift**: Detects unnatural, script-injected heartbeat timing intervals.
+* **Headless Detection**: Flags automated headless browsers.
+Sessions scoring $\ge 50$ are flagged as `FRAUD_EXCLUDED` and disqualified from royalty pools.
+
+### 6. DPDP Act 2023 Compliance & Privacy Vault
+Engineered under the statutory provisions of the **Digital Personal Data Protection Act 2023**:
+* **$k$-Anonymity Audience Guard ($k=25$)**: Audience cohorts with fewer than 25 listeners are suppressed at the database query layer (`[SUPPRESSED: < 25]`) to prevent de-anonymization linkage attacks.
+* **Purpose Limitation**: Granular consent tracking for `TELEMETRY_ANALYTICS` and `PAYOUT_SETTLEMENT`.
+* **Right to Data Portability (Art 12)**: 1-click machine-readable JSON export containing listener profiles, sessions, and consent histories.
+
+---
+
+## 🚀 Getting Started & Installation
+
+### Prerequisites
+* **macOS / Linux / Windows** (Node.js v20+ LTS)
+* **pnpm** (`npm install -g pnpm`)
+* **Foundry** (`curl -L https://foundry.paradigm.xyz | bash && foundryup`)
+* **PostgreSQL Database** (Cloud Supabase, Neon, or local PostgreSQL)
+* **MetaMask Browser Extension** (configured with Polygon Amoy testnet)
+
+### Environment Setup (`.env`)
+Copy the template and configure your credentials:
 ```bash
-orb start
+cp .env.example .env
 ```
-Verify OrbStack is running:
-```bash
-orb status
-# Output should show: Running
+Ensure your `.env` contains:
+```env
+DATABASE_URL="postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NEXT_PUBLIC_POLYGON_CHAIN_ID="80002"
+NEXT_PUBLIC_POLYGON_RPC="https://polygon-amoy.drpc.org"
+AMOY_RPC_URL="https://polygon-amoy.drpc.org"
+NEXT_PUBLIC_SETTLEMENT_MANAGER_ADDRESS="0xf23Df41409afbF92578198a95c965e0e5ECbefa5"
+NEXT_PUBLIC_CREATOR_REGISTRY_ADDRESS="0x9FD0052F3e4E4643E21140398Fee9e7d6335F821"
+WALLET_ADDRESS="0xYourPublicWalletAddress"
+PRIVATE_KEY="your_deployer_private_key_without_0x"
 ```
 
-### Step 2: Start PostgreSQL Database Container
+### Database Synchronization
+Synchronize the schema and populate seeded catalog data:
 ```bash
-docker compose up -d
-```
-Verify container health:
-```bash
-docker compose ps
-# Output: music-platform-postgres (postgres:16-alpine) ... Up (healthy) on 0.0.0.0:5432
-```
-
-### Step 3: Install Project Dependencies
-```bash
-pnpm install
-```
-
-### Step 4: Sync Database Schema & Generate Prisma Client
-```bash
+# Push Prisma schema to PostgreSQL
 pnpm db:push
-```
-This maps the schema in `prisma/schema.prisma` directly to your OrbStack Postgres database.
 
-### Step 5: Seed Realistic Catalog & Financial Data
-```bash
+# Seed master tracks, ledger accounts, and sample periods
 pnpm db:seed
 ```
-Seeds:
-- Standard **Chart of Accounts** (1010, 2010, 2020, 3010, 4010, 5010)
-- **4 Verified Indian Indie Artists** (Tarang, Ananya, KABIR, Meera & The Monsoon) with real Polygon Amoy addresses
-- **6 Master Tracks** with functional audio preview streams and artwork
-- **Initial Balanced Ledger Transactions** (Escrow subscription inflow & royalty expense distribution)
-- **Settlement Period #1** with computed Merkle root: `0x211b0bc5a60c11614d3fe347989b1d3a9a9d5f5a56bb40b11317c8c5e88e4637`
-- **Playback Sessions** (1 clean listening session, 1 flagged bot-farm loop anomaly)
-- **DPDP Act 2023 Consent Records**
 
-### Step 6: Launch Development Server
+### Smart Contract Deployment Script
+To deploy new smart contracts to Polygon Amoy, update `.env`, and launch the platform:
+```bash
+pnpm deploy:dev
+# Or execute directly:
+bash scripts/deploy-and-dev.sh
+```
+
+To run the platform without re-deploying contracts:
 ```bash
 pnpm dev
 ```
@@ -158,204 +217,59 @@ Open **[http://localhost:3000](http://localhost:3000)** in your browser.
 
 ---
 
-## 🧪 How to Run Tests
+## 🧪 Automated Verification & Test Suite
 
-Sonder includes an automated test verification suite covering all mathematical, cryptographic, and fraud-detection invariants.
-
-Run the test suite with:
+Sonder includes 18 automated mathematical, cryptographic, and accounting engine tests:
 ```bash
 pnpm test:engine
 ```
 
-### What `test:engine` Validates (18 Test Assertions):
-1. **Double-Entry Ledger Invariant**:
-   - Asserts total system debits strictly equal total credits across all accounts in the database.
-   - Verifies Section 194O 1% statutory TDS calculation down to the exact paise (`Gross == TDS + Net`).
-   - Rejects intentionally unbalanced transactions (`Debit != Credit`) and asserts the ledger engine throws an invariant violation.
-2. **Cryptographic Merkle Settlement**:
-   - Generates OpenZeppelin-compatible Merkle tree root (`bytes32`).
-   - Verifies each creator's audit proof (`bytes32[]`) cryptographically against the root.
-   - Negative test: tampers with an allocation amount and confirms the verifier rejects the manipulated leaf.
-3. **EIP-712 Rights Attestation**:
-   - Constructs typed data payload and signs with an ephemeral ethers wallet.
-   - Recovers the signer address server-side and validates exact match.
-   - Negative test: verifies signature against a different (impostor) address and confirms rejection.
-4. **Playback Fraud & Qualified Listening**:
-   - Tests normal human playback stream: risk score `< 20/100`, qualified listening approved.
-   - Tests synthetic bot cluster (rapid 500ms heartbeats + 15 repeats): risk score `> 50/100`, flags session as `FRAUD_EXCLUDED`, and disqualifies it from royalty allocation.
+### Test Assertions Covered:
+1. **Double-Entry Invariant**: Confirms $\sum \text{Debits} \equiv \sum \text{Credits}$; rejects unbalanced journal entries.
+2. **Statutory Tax Integrity**: Validates Section 194J 1% TDS calculation down to the exact paise.
+3. **Merkle Proof Verification**: Validates proof paths against OpenZeppelin verification standards; rejects tampered leaves.
+4. **EIP-712 Signer Recovery**: Verifies public address derivation from structured typed signatures; rejects impostor addresses.
+5. **Anti-Fraud Classification**: Confirms bot-farm session exclusion and qualified stream duration approval.
 
 ---
 
-## 📱 Core Workflows & App Guide
+## 🔒 Security & Git Safety Considerations
 
-### 1. Listener Playback & Telemetry Workflow (`/`)
-1. Visit `http://localhost:3000`.
-2. Browse the master catalog, filtered by genres (*Indian Electronica*, *Indie Folk*, *Ambient*, *Neo-Soul*).
-3. Click the **Play button** on any release (e.g. *Monsoon Cybernetics*).
-4. The persistent bottom audio bar will slide up and begin playing Web Audio.
-5. In the bottom-right corner, observe the **Live Heartbeat Telemetry Chip**:
-   - A pulsing green dot displays `HB #1 (ses_...)`.
-   - The countdown shows `30s to qualify`.
-   - Every 8 seconds, the client sends a background heartbeat to `/api/playback-sessions/[token]/heartbeat`.
-   - Once 30 continuous seconds elapse without velocity anomalies, the status turns into **"Qualified Stream"** and increments the track's qualified minutes in the database.
+Sonder maintains strict operational and cryptographic security standards:
 
----
+* **No Secrets in Git**: `.env`, `.env.local`, `broadcast/`, `cache/`, and private keys are strictly blacklisted in [`.gitignore`](file:///Users/ayon/Downloads/music/.gitignore). Use [`.env.example`](file:///Users/ayon/Downloads/music/.env.example) for environment configuration.
+* **No On-Chain PII**: Smart contracts store exclusively 32-byte cryptographic digests (`bytes32`) and public wallet addresses.
+* **Merkle Leaf Double Hashing**: Leaves are double-hashed using `keccak256(bytes.concat(keccak256(...)))` to neutralize second-preimage collision attacks.
+* **EIP-712 Domain Separation**: Binds directly to Polygon Amoy `chainId: 80002` to prevent cross-chain signature replay attacks.
+* **Non-Custodial Design**: The server never holds custody of artist earnings or copyright keys. Payout claims and copyright attestations are signed directly by artists via their non-custodial Web3 wallets.
 
-### 2. Creator Studio & EIP-712 Rights Attestation (`/studio`)
-1. Visit `http://localhost:3000/studio`.
-2. **Ingest a New Master**:
-   - Fill in Title, Genre, Duration, and Audio Stream URL.
-   - Click **"Register Master in DRAFT State"**.
-3. **Advance the Track Lifecycle State Machine**:
-   - `DRAFT` ➔ Click **"Upload to Cloud"** ➔ `UPLOADED`.
-   - `UPLOADED` ➔ Click **"Run HLS Transcode & Fingerprint"** ➔ `PROCESSING`.
-   - `PROCESSING` ➔ Click **"Submit to Moderation"** ➔ `MODERATION_REVIEW`.
-   - `MODERATION_REVIEW` ➔ Click **"Pass Moderation & Publish"** ➔ `PUBLISHED`.
-4. **Sign Non-Repudiable EIP-712 Rights Attestation**:
-   - When a track reaches `PUBLISHED`, click **"Sign EIP-712 Rights Attestation"**.
-   - Review the legal warranty statement under Section 19 of the Indian Copyright Act 1957.
-   - Click either **"Sign with MetaMask"** (for browser wallet) or **"Instant Testnet Key Signer"** (for 1-click testnet signing).
-   - The signature is verified server-side via `ethers.verifyTypedData`.
-   - Upon verification, the track immediately transitions to **`MONETIZED`**, unlocks royalty eligibility, and triggers a celebration animation!
+For security disclosures, refer to [`SECURITY.md`](file:///Users/ayon/Downloads/music/SECURITY.md).
 
 ---
 
-### 3. Double-Entry Ledger & Section 194O TDS (`/ledger`)
-1. Visit `http://localhost:3000/ledger`.
-2. **Verify System Invariant**:
-   - Inspect the top badge: `INVARIANT SATISFIED: DEBITS == CREDITS`.
-   - Total debits and credits match to the exact single paisa (₹4,30,000.00).
-3. **Inspect Chart of Accounts**:
-   - `1010` Escrow & Cash Vault (Asset)
-   - `2010` Creator Royalties Payable (Liability)
-   - `2020` TDS Withholding Payable - Section 194O (Liability)
-   - `4010` Subscriber Royalty Pool Revenue (Revenue)
-   - `5010` Royalty Distribution Expense (Expense)
-4. **Interactive Section 194O TDS Calculator**:
-   - Type any gross royalty amount in the input box (e.g. ₹75,000).
-   - Watch the live breakdown: 1.00% TDS (₹750) withheld for tax remittance, net ₹74,250 claimable.
-5. **Live Transaction Posting Simulator**:
-   - Click **"Subscriber Pool Inflow (+₹1,00,000)"**: Posts Debit 1010 / Credit 4010.
-   - Click **"Creator Payout + TDS (+₹25,000)"**: Posts Debit 2010 (₹25,000) / Credit 1010 (₹24,750 net) / Credit 2020 (₹250 TDS).
-   - Observe the live ledger journal log update instantly with unique transaction IDs and idempotency keys.
+## 🔌 API Route Reference
 
----
-
-### 4. Cryptographic Merkle Settlement (`/settlement`)
-1. Visit `http://localhost:3000/settlement`.
-2. **Inspect Period #1 Root**:
-   - View the committed Merkle Root (`0x211b0bc5a60c...`) and the Polygon Amoy blockchain verification badge.
-3. **Interactive Proof Verifier**:
-   - Select any seeded creator from the dropdown (e.g. *Tarang* or *Ananya*).
-   - The engine extracts:
-     - **Leaf Hash**: `keccak256(abi.encodePacked(address, netAmount, period))`
-     - **Audit Proof Path**: Array of sibling `bytes32` hashes.
-   - Reconstructs the Merkle root client-side using `verifyAllocationProof`.
-   - Displays the verdict: **"CRYPTOGRAPHICALLY VALID: Proof accurately reconstructs root"**.
-4. **Trigger On-Demand Settlement**:
-   - Click **"Trigger Settlement Period Run"**.
-   - Aggregates all current qualified listening minutes, allocates pro-rata shares, computes 1% TDS, builds a brand-new binary Merkle tree, and generates proof elements for all creators in the database.
-
----
-
-### 5. Anti-Fraud & Playback Diagnostics (`/fraud-diagnostics`)
-1. Visit `http://localhost:3000/fraud-diagnostics`.
-2. **Review Anti-Fraud Heuristics**:
-   - Multi-signal scoring covers **Loop Farming**, **Velocity Anomalies**, **Heartbeat Drift**, and **High Concurrency**.
-3. **Examine Live Feed**:
-   - Observe human listening streams with low risk scores (`0/100` or `8/100`).
-   - Observe the seeded bot-farm session (`ses_bot_farm_flagged_loop_cluster_99`):
-     - Risk Score: **`85/100` (CRITICAL)**.
-     - Status: **`FRAUD_EXCLUDED`**.
-     - Signal: *Suspicious loop activity: 14 consecutive plays in under 60 minutes | Unnatural heartbeat delivery intervals*.
-4. **Audit Session Events**:
-   - Click **"Events Trace"** on any session to inspect the exact timeline of `START` and `HEARTBEAT` pings with millisecond delta intervals.
-
----
-
-### 6. Fan CRM, k-Anonymity & Privacy Vault (`/privacy`)
-1. Visit `http://localhost:3000/privacy`.
-2. **Query-Layer k-Anonymity Guard ($k = 25$)**:
-   - Review the demographic audience cohorts table.
-   - High-volume cohorts (*Bengaluru* with 840, *Mumbai* with 620) display aggregate statistics.
-   - Low-volume cohorts (*Shillong* with 19 listeners, *Goa* with 14 listeners) are **strictly suppressed** at the database query layer:
-     - Listener Count: `[SUPPRESSED: < 25]`
-     - Listening Duration: `[DATA REDACTED]`
-     - Prevents de-anonymization and linkage attacks.
-3. **Immutable DPDP Consent Records**:
-   - View registered user consent records under Digital Personal Data Protection Act 2023 guidelines.
-   - Click **"Revoke"** to exercise statutory right to withdraw consent.
-4. **Right to Data Portability (DPDP Art 12 / GDPR Art 20)**:
-   - Click **"Export Personal Data (DPDP Art 12)"**.
-   - Downloads a complete, machine-readable JSON bundle containing user profile, playback events, consent audit history, and royalty claim records.
-
----
-
-## 🔌 API Endpoints Reference
-
-| Method | Endpoint | Description | Key Payload / Query |
-|---|---|---|---|
-| `GET` | `/api/tracks` | Lists master tracks with creator profile | `?state=MONETIZED` |
-| `POST` | `/api/tracks` | Registers a new track in `DRAFT` state | `{ title, genre, audioUrl, durationSeconds }` |
-| `POST` | `/api/tracks/[id]/state` | Advances track lifecycle state | `{ targetState: 'UPLOADED' }` |
-| `POST` | `/api/attestations/verify` | Verifies EIP-712 signature & advances to `MONETIZED` | `{ trackId, message, signature, expectedSigner }` |
-| `GET` | `/api/playback-sessions` | Fetches sessions with fraud risk score | `?limit=50` |
-| `POST` | `/api/playback-sessions` | Initiates new playback session | `{ trackId, userId }` |
-| `POST` | `/api/playback-sessions/[token]/heartbeat` | Ingests playback heartbeat & computes fraud | `{ positionSeconds: 15 }` |
-| `GET` | `/api/ledger` | Returns chart of accounts, entries, & invariant status | None |
-| `POST` | `/api/ledger` | Simulates subscriber deposit or creator payout + TDS | `{ action: 'SIMULATE_CREATOR_PAYOUT', amountInr: '25000' }` |
-| `GET` | `/api/settlement` | Lists settlement periods, roots, & allocations | None |
-| `POST` | `/api/settlement` | Builds new period Merkle tree off-chain | `{ totalPoolInr: '250000' }` |
-| `GET` | `/api/settlement/proof/[wallet]` | Looks up creator leaf, proof `bytes32[]`, & validation | None |
-| `GET` | `/api/privacy` | Returns k-anonymity demographic matrix & consents | None |
-| `POST` | `/api/privacy` | Revokes consent or exports user data package | `{ action: 'EXPORT_USER_DATA' }` |
-
----
-
-## 🗄 Database Schema & Data Model
-
-The schema is defined in [`prisma/schema.prisma`](file:///Users/ayon/Downloads/music/prisma/schema.prisma):
-
-- `User`: Identity with unique `walletAddress`, role (`LISTENER`, `CREATOR`, `ADMIN`), and KYC flag.
-- `CreatorProfile`: Stage name, bio, payout wallet, verified status, and total earnings.
-- `Track`: Master metadata, lifecycle state (`DRAFT` ➔ `MONETIZED`), IPFS CID, and EIP-712 signature fields.
-- `PlaybackSession`: Session token, started/ended timestamps, fraud risk score (0-100), and qualified listening duration.
-- `PlaybackEvent`: Granular timeline entries (`START`, `HEARTBEAT`, `SEEK`, `PAUSE`, `STOP`).
-- `LedgerAccount`: Chart of accounts with type (`ASSET`, `LIABILITY`, `REVENUE`, `EXPENSE`, `EQUITY`).
-- `LedgerEntry`: Double-entry rows storing `amountMinor` (paise), direction (`DEBIT`, `CREDIT`), and idempotency keys.
-- `SettlementPeriod`: Numbered periods with total pool minor, committed Merkle root, and Polygon Amoy tx hash.
-- `CreatorAllocation`: Creator share with gross royalty, 1% TDS, net claimable paise, and Merkle proof JSON string.
-- `ConsentRecord`: User consent with scope, DPDP policy version hash, and revocation status.
-
----
-
-## 🔧 Troubleshooting & Gotchas
-
-### 1. "Failed to connect to docker API at unix:///Users/ayon/.orbstack/run/docker.sock"
-**Cause**: The OrbStack daemon was stopped on your Mac.  
-**Resolution**:
-```bash
-orb start
-docker compose up -d
-```
-
-### 2. pnpm "Ignored build scripts: @prisma/client, esbuild, prisma"
-**Cause**: pnpm v10+ requires build scripts to be explicitly approved.  
-**Resolution**: Run `pnpm approve-builds --all` or ensure `onlyBuiltDependencies` is present in `pnpm-workspace.yaml`.
-
-### 3. BigInt JSON Serialization
-**Design note**: PostgreSQL `BigInt` (paise) cannot be serialized by standard `JSON.stringify`. Sonder provides a universal helper [`serializeBigInts()`](file:///Users/ayon/Downloads/music/lib/serialize.ts) that recursively maps all `BigInt` values to string format for safe client consumption.
-
-### 4. Database Reset & Reseed
-If you want to wipe the database and start fresh with sample data:
-```bash
-pnpm db:push --force-reset
-pnpm db:seed
-```
+| Method | Route | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/tracks` | Retrieves master tracks with creator profile details |
+| `POST` | `/api/tracks` | Registers a new master recording in `DRAFT` state |
+| `POST` | `/api/tracks/[id]/state` | Advances track lifecycle (`UPLOADED`, `PROCESSING`, `PUBLISHED`) |
+| `POST` | `/api/attestations/verify` | Validates EIP-712 signature and unlocks `MONETIZED` status |
+| `GET` | `/api/playback-sessions` | Returns streaming telemetry sessions with fraud risk scores |
+| `POST` | `/api/playback-sessions` | Initializes a playback session and returns a session token |
+| `POST` | `/api/playback-sessions/[token]/heartbeat` | Ingests stream heartbeat, calculates risk score, and derives qualified streams |
+| `GET` | `/api/ledger` | Returns chart of accounts, journal entries, and balance invariants |
+| `POST` | `/api/ledger` | Posts double-entry transactions (subscriber inflows or creator payouts + TDS) |
+| `GET` | `/api/settlement` | Lists settlement periods, committed Merkle roots, and allocations |
+| `POST` | `/api/settlement` | Executes pro-rata royalty calculation and builds off-chain Merkle tree |
+| `GET` | `/api/settlement/proof/[wallet]` | Fetches creator Merkle proof path and cryptographic leaf |
+| `GET` | `/api/privacy` | Generates $k$-anonymity audience matrix ($k=25$) and consent history |
+| `POST` | `/api/privacy` | Revokes consent or exports machine-readable DPDP user archive (JSON) |
 
 ---
 
 ## 📜 License & Acknowledgments
 
-Created as a showcase portfolio project illustrating high-stakes fintech and Web3 music engineering.  
-Built with Next.js, Prisma, Tailwind CSS, ethers.js, and OrbStack.
+This project is licensed under the **MIT License** — see the [`LICENSE`](file:///Users/ayon/Downloads/music/LICENSE) file for details.
+
+Developed as a showcase portfolio illustrating high-performance Web3 architecture, financial ledger invariants, and digital rights monetization.
