@@ -112,7 +112,7 @@ The contracts are live on the **Polygon Amoy Testnet (Chain ID 80002)** and full
 | **CreatorClaims** | `0xb61136b637f5d6fF87123A11C238622c83c27f51` | Contract Deployed | [View on PolygonScan](https://amoy.polygonscan.com/address/0xb61136b637f5d6fF87123A11C238622c83c27f51) |
 
 * **SettlementManager.sol**: Commits periodic 32-byte Merkle roots, pool distributions, and IPFS ledger digests directly on-chain.
-* **CreatorRegistry.sol**: Maps off-chain creator UUID hashes to verified payout wallets with zero on-chain PII.
+* **CreatorRegistry.sol**: Maps off-chain creator UUID hashes to verified payout wallets with zero on-chain PII and secure ownership transition.
 * **CreatorClaims.sol**: Trustless on-chain sibling proof verification for direct wallet withdrawals against committed roots.
 
 ---
