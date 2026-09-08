@@ -107,11 +107,13 @@ The contracts are live on the **Polygon Amoy Testnet (Chain ID 80002)** and full
 
 | Contract | Polygon Amoy Address | Verified Transaction Hash | Explorer Link |
 | :--- | :--- | :--- | :--- |
-| **SettlementManager** | `0xf23Df41409afbF92578198a95c965e0e5ECbefa5` | `0x13fee2ecbcdb72ef473355aa59542737ac237535be47e7b3ea23b15544934134` | [View on PolygonScan](https://amoy.polygonscan.com/address/0xf23Df41409afbF92578198a95c965e0e5ECbefa5) |
-| **CreatorRegistry** | `0x9FD0052F3e4E4643E21140398Fee9e7d6335F821` | `0xcd397e8db63424a19533f36f89e6531810c6efe0532108545aaea573f9af4092` | [View on PolygonScan](https://amoy.polygonscan.com/address/0x9FD0052F3e4E4643E21140398Fee9e7d6335F821) |
+| **SettlementManager** | `0xCc5A9aB4A844BF89a972F7Fb5830F0c2027a689b` | • Period #1: [`0xd1b80509...`](https://amoy.polygonscan.com/tx/0xd1b8050928034678f273f2f5ce92f6c7f1e526c15b8a7adfcbcaab81611688d0)<br>• Period #2: [`0xe478ffc7...`](https://amoy.polygonscan.com/tx/0xe478ffc7c722bf1a46f45d3823bd377e76e69ce62096a3c930a31c24643d019a) | [View on PolygonScan](https://amoy.polygonscan.com/address/0xCc5A9aB4A844BF89a972F7Fb5830F0c2027a689b) |
+| **CreatorRegistry** | `0xc84edECB4DA294756Ac03B696F3e3f9ae78D5000` | Contract Deployed | [View on PolygonScan](https://amoy.polygonscan.com/address/0xc84edECB4DA294756Ac03B696F3e3f9ae78D5000) |
+| **CreatorClaims** | `0xb61136b637f5d6fF87123A11C238622c83c27f51` | Contract Deployed | [View on PolygonScan](https://amoy.polygonscan.com/address/0xb61136b637f5d6fF87123A11C238622c83c27f51) |
 
-* **SettlementManager.sol**: Commits periodic 32-byte Merkle roots, pool distributions, and IPFS ledger digests.
+* **SettlementManager.sol**: Commits periodic 32-byte Merkle roots, pool distributions, and IPFS ledger digests directly on-chain.
 * **CreatorRegistry.sol**: Maps off-chain creator UUID hashes to verified payout wallets with zero on-chain PII.
+* **CreatorClaims.sol**: Trustless on-chain sibling proof verification for direct wallet withdrawals against committed roots.
 
 ---
 
@@ -144,10 +146,11 @@ $$\text{Total Debits} \equiv \text{Total Credits}$$
 ### 4. Merkle Royalty Settlement & On-Chain Roots
 Rather than executing thousands of costly on-chain transactions, Sonder utilizes an off-chain compute, on-chain commit model:
 1. Qualified stream counts are compiled into pro-rata creator allocations.
-2. 1.00% TDS is deducted for tax compliance.
+2. 1.00% TDS is deducted for tax compliance (Section 194O).
 3. A deterministic, sorted-pair binary Merkle tree (`keccak256`) is constructed.
-4. The operator commits the single 32-byte root hash on-chain to **Polygon Amoy**.
+4. The operator commits the single 32-byte root hash on-chain to **Polygon Amoy** via `SettlementManager.sol`.
 5. Creators receive a lightweight $O(\log N)$ sibling proof enabling instant, independent mathematical verification on [PolygonScan](https://amoy.polygonscan.com/).
+6. Multi-cycle settlement management allows toggling between historical cycles with 1-click on-chain commitment triggers directly from the interactive UI.
 
 ### 5. Anti-Fraud Playback Heuristics
 The platform evaluates every streaming session with real-time risk scoring (0–100):
@@ -185,8 +188,9 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 NEXT_PUBLIC_POLYGON_CHAIN_ID="80002"
 NEXT_PUBLIC_POLYGON_RPC="https://polygon-amoy.drpc.org"
 AMOY_RPC_URL="https://polygon-amoy.drpc.org"
-NEXT_PUBLIC_SETTLEMENT_MANAGER_ADDRESS="0xf23Df41409afbF92578198a95c965e0e5ECbefa5"
-NEXT_PUBLIC_CREATOR_REGISTRY_ADDRESS="0x9FD0052F3e4E4643E21140398Fee9e7d6335F821"
+NEXT_PUBLIC_SETTLEMENT_MANAGER_ADDRESS="0xCc5A9aB4A844BF89a972F7Fb5830F0c2027a689b"
+NEXT_PUBLIC_CREATOR_REGISTRY_ADDRESS="0xc84edECB4DA294756Ac03B696F3e3f9ae78D5000"
+NEXT_PUBLIC_CREATOR_CLAIMS_ADDRESS="0xb61136b637f5d6fF87123A11C238622c83c27f51"
 WALLET_ADDRESS="0xYourPublicWalletAddress"
 PRIVATE_KEY="your_deployer_private_key_without_0x"
 ```
@@ -262,6 +266,7 @@ For security disclosures, refer to [`SECURITY.md`](SECURITY.md).
 | `POST` | `/api/ledger` | Posts double-entry transactions (subscriber inflows or creator payouts + TDS) |
 | `GET` | `/api/settlement` | Lists settlement periods, committed Merkle roots, and allocations |
 | `POST` | `/api/settlement` | Executes pro-rata royalty calculation and builds off-chain Merkle tree |
+| `POST` | `/api/settlement/commit` | Broadcasts and permanently commits a calculated Merkle root on-chain to Polygon Amoy |
 | `GET` | `/api/settlement/proof/[wallet]` | Fetches creator Merkle proof path and cryptographic leaf |
 | `GET` | `/api/privacy` | Generates $k$-anonymity audience matrix ($k=25$) and consent history |
 | `POST` | `/api/privacy` | Revokes consent or exports machine-readable DPDP user archive (JSON) |
