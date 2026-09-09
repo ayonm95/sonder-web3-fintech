@@ -112,8 +112,8 @@ The contracts are live on the **Polygon Amoy Testnet (Chain ID 80002)** and full
 | Contract | Polygon Amoy Address | Verified Transaction Hash | Explorer Link |
 | :--- | :--- | :--- | :--- |
 | **SettlementManager** | `0xCc5A9aB4A844BF89a972F7Fb5830F0c2027a689b` | • Period #1: [`0xd1b80509...`](https://amoy.polygonscan.com/tx/0xd1b8050928034678f273f2f5ce92f6c7f1e526c15b8a7adfcbcaab81611688d0)<br>• Period #2: [`0xe478ffc7...`](https://amoy.polygonscan.com/tx/0xe478ffc7c722bf1a46f45d3823bd377e76e69ce62096a3c930a31c24643d019a) | [View on PolygonScan](https://amoy.polygonscan.com/address/0xCc5A9aB4A844BF89a972F7Fb5830F0c2027a689b) |
-| **CreatorRegistry** | `0xc84edECB4DA294756Ac03B696F3e3f9ae78D5000` | Contract Deployed | [View on PolygonScan](https://amoy.polygonscan.com/address/0xc84edECB4DA294756Ac03B696F3e3f9ae78D5000) |
-| **CreatorClaims** | `0xb61136b637f5d6fF87123A11C238622c83c27f51` | Contract Deployed | [View on PolygonScan](https://amoy.polygonscan.com/address/0xb61136b637f5d6fF87123A11C238622c83c27f51) |
+| **CreatorRegistry** | `0xc84edECB4DA294756Ac03B696F3e3f9ae78D5000` | • Deploy: [`0x413e7874...`](https://amoy.polygonscan.com/tx/0x413e78744875d00d161c4aa0dd5a4b0cda54494d36b62ea40c606479cddb2622)<br>• Creator Registration: [`0xfc628220...`](https://amoy.polygonscan.com/tx/0xfc62822022c1cdd5744475bee9abae76e8c3dcae78df95acdae7433b9e816e78) | [View on PolygonScan](https://amoy.polygonscan.com/address/0xc84edECB4DA294756Ac03B696F3e3f9ae78D5000) |
+| **CreatorClaims** | `0xB61136b637F5d6Ff87123a11C238622c83c27f51` | • Protocol Initialization: [`0x2893f0d6...`](https://amoy.polygonscan.com/tx/0x2893f0d641e3100b1f6fd8f82f391726dc44562078a68778b589074fe4341cb3) | [View on PolygonScan](https://amoy.polygonscan.com/address/0xB61136b637F5d6Ff87123a11C238622c83c27f51) |
 
 * **SettlementManager.sol**: Commits periodic 32-byte Merkle roots, pool distributions, and IPFS ledger digests directly on-chain.
 * **CreatorRegistry.sol**: Maps off-chain creator UUID hashes to verified payout wallets with zero on-chain PII and secure ownership transition.
@@ -194,7 +194,7 @@ NEXT_PUBLIC_POLYGON_RPC="https://polygon-amoy.drpc.org"
 AMOY_RPC_URL="https://polygon-amoy.drpc.org"
 NEXT_PUBLIC_SETTLEMENT_MANAGER_ADDRESS="0xCc5A9aB4A844BF89a972F7Fb5830F0c2027a689b"
 NEXT_PUBLIC_CREATOR_REGISTRY_ADDRESS="0xc84edECB4DA294756Ac03B696F3e3f9ae78D5000"
-NEXT_PUBLIC_CREATOR_CLAIMS_ADDRESS="0xb61136b637f5d6fF87123A11C238622c83c27f51"
+NEXT_PUBLIC_CREATOR_CLAIMS_ADDRESS="0xB61136b637F5d6Ff87123a11C238622c83c27f51"
 WALLET_ADDRESS="0xYourPublicWalletAddress"
 PRIVATE_KEY="your_deployer_private_key_without_0x"
 ```
