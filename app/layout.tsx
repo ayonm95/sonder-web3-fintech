@@ -8,6 +8,13 @@ export const metadata: Metadata = {
   title: 'Sonder — Creator-First Royalty & Streaming Platform',
   description:
     'A decentralized creator music platform featuring double-entry financial ledgers, cryptographic Merkle tree settlements, real EIP-712 rights attestation, and transparent anti-fraud diagnostics.',
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico' },
+    ],
+    apple: '/icon.png',
+  },
 };
 
 export default function RootLayout({

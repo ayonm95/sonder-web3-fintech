@@ -354,7 +354,7 @@ async function main() {
       totalPoolMinor: BigInt(18000000),
       merkleRoot: merkleResult.root,
       ipfsMetadataCid: 'bafybeicg2u4q7xsettlementp1metadatahash',
-      onChainTxHash: '0x7e83f9821a8d052b65103c80a71ec26a457492c1015f8e53a209b5523b5d84c1',
+      onChainTxHash: '0xd1b8050928034678f273f2f5ce92f6c7f1e526c15b8a7adfcbcaab81611688d0',
       status: SettlementStatus.COMMITTED_ON_CHAIN,
       finalizedAt: new Date('2026-09-01T10:00:00Z'),
     },
