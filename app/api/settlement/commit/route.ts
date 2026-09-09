@@ -95,8 +95,6 @@ export async function POST(request: Request) {
     }
 
     const ipfsHash = ethers.keccak256(ethers.toUtf8Bytes(`ipfs://sonder-audit-pack-period-${period.periodNumber}`));
-
-    const feeData = await provider.getFeeData();
     const maxFeePerGas = feeData.maxFeePerGas ? (feeData.maxFeePerGas * 150n) / 100n : ethers.parseUnits('35', 'gwei');
     const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ? (feeData.maxPriorityFeePerGas * 150n) / 100n : ethers.parseUnits('30', 'gwei');
 

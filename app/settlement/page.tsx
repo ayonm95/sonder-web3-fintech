@@ -13,6 +13,7 @@ import {
   ArrowRight,
   ShieldCheck,
   Send,
+  Trash2,
 } from 'lucide-react';
 import { verifyAllocationProof, generateAllocationLeaf } from '@/lib/engines/merkle';
 
@@ -140,6 +141,24 @@ export default function SettlementPage() {
     }
   }
 
+  async function handleDeletePeriod(periodNumber: number) {
+    if (!confirm(`Are you sure you want to discard calculated Period #${periodNumber}?`)) return;
+    try {
+      const res = await fetch(`/api/settlement?period=${periodNumber}`, {
+        method: "DELETE",
+      });
+      const json = await res.json();
+      if (json.success) {
+        setSelectedPeriodIdx(0);
+        await loadSettlements();
+      } else {
+        alert(json.error || "Failed to delete period");
+      }
+    } catch (err) {
+      console.error("Error deleting period:", err);
+    }
+  }
+
   const formatPaiseToInr = (minorStr: string) => {
     try {
       const minor = BigInt(minorStr || '0');
@@ -235,14 +254,24 @@ export default function SettlementPage() {
                     {activePeriod.status}
                   </span>
                   {activePeriod.status !== 'COMMITTED_ON_CHAIN' && (
-                    <button
-                      onClick={() => handleBroadcastPeriod(activePeriod.id)}
-                      disabled={isBroadcasting}
-                      className="ml-2 px-3 py-1 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-black text-xs font-bold hover:scale-105 active:scale-95 disabled:opacity-50 transition-all flex items-center gap-1.5 shadow-sm"
-                    >
-                      <Send className="h-3.5 w-3.5" />
-                      {isBroadcasting ? 'Broadcasting on-chain...' : 'Broadcast to Polygon Amoy'}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleBroadcastPeriod(activePeriod.id)}
+                        disabled={isBroadcasting}
+                        className="ml-2 px-3 py-1 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-black text-xs font-bold hover:scale-105 active:scale-95 disabled:opacity-50 transition-all flex items-center gap-1.5 shadow-sm"
+                      >
+                        <Send className="h-3.5 w-3.5" />
+                        {isBroadcasting ? 'Broadcasting on-chain...' : 'Broadcast to Polygon Amoy'}
+                      </button>
+                      <button
+                        onClick={() => handleDeletePeriod(activePeriod.periodNumber)}
+                        className="px-2.5 py-1 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xs font-medium hover:scale-105 active:scale-95 transition-all flex items-center gap-1"
+                        title="Discard uncommitted calculated period"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Discard Draft
+                      </button>
+                    </div>
                   )}
                 </div>
                 <div className="text-xs text-slate-400 font-mono mt-1">

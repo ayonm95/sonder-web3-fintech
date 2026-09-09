@@ -152,3 +152,45 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const periodParam = searchParams.get("period");
+    const periodNumber = periodParam ? parseInt(periodParam, 10) : undefined;
+
+    const whereClause: any = {
+      status: SettlementStatus.CALCULATED, // Only permit deleting uncommitted/draft periods
+    };
+    if (periodNumber) {
+      whereClause.periodNumber = periodNumber;
+    } else {
+      whereClause.periodNumber = { gte: 3 }; // default remove uncommitted test periods >= 3
+    }
+
+    const periodsToDelete = await prisma.settlementPeriod.findMany({
+      where: whereClause,
+      select: { id: true, periodNumber: true },
+    });
+
+    for (const p of periodsToDelete) {
+      await prisma.creatorAllocation.deleteMany({
+        where: { periodId: p.id },
+      });
+      await prisma.settlementPeriod.delete({
+        where: { id: p.id },
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `Successfully removed ${periodsToDelete.length} uncommitted calculated settlement periods`,
+      deletedPeriods: periodsToDelete.map((p) => p.periodNumber),
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { success: false, error: error.message || "Failed to remove settlement period" },
+      { status: 500 }
+    );
+  }
+}
