@@ -81,10 +81,16 @@ export async function POST(request: Request) {
 
     // 2. Verify wallet balance before broadcasting
     const balance = await provider.getBalance(wallet.address);
-    if (balance === 0n) {
+    const feeData = await provider.getFeeData();
+    const maxFee = feeData.maxFeePerGas || ethers.parseUnits("60", "gwei");
+    const estimatedCost = 160000n * maxFee;
+
+    if (balance < estimatedCost) {
+      const currentBal = ethers.formatEther(balance);
+      const neededBal = ethers.formatEther(estimatedCost);
       return NextResponse.json({
         success: false,
-        error: `Operator wallet (${wallet.address}) has 0 POL balance. Please fund with testnet POL on Polygon Amoy faucet.`
+        error: `Operator wallet (${wallet.address.slice(0, 6)}...${wallet.address.slice(-4)}) has insufficient testnet POL for gas. Current: ${Number(currentBal).toFixed(4)} POL, Required: ~${Number(neededBal).toFixed(4)} POL. Please fund this wallet with free testnet POL via Polygon Amoy Faucet (https://faucet.polygon.technology) to broadcast new periods on-chain.`,
       }, { status: 400 });
     }
 
