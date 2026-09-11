@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { Analytics } from "@vercel/analytics/next"
 import { AudioPlayerProvider } from '@/components/AudioPlayerContext';
 import { Navbar } from '@/components/Navbar';
 import { PersistentPlayerBar } from '@/components/PersistentPlayerBar';
@@ -29,6 +30,7 @@ export default function RootLayout({
           <Navbar />
           <main className="flex-1 pb-28">{children}</main>
           <PersistentPlayerBar />
+          <Analytics />
         </AudioPlayerProvider>
       </body>
     </html>
